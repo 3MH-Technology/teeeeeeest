@@ -10,7 +10,11 @@ export default function DashboardPage() {
     const [metrics, setMetrics] = useState({ cpuUsage: 0, memUsage: 0 });
     const fetchBots = async () => {
         try {
-            const res = await fetch('/api/bots');
+            const res = await fetch('/api/bots', {
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                }
+            });
             const data = await res.json();
             setBots(data.bots || []);
             if (data.maxBots)

@@ -4,9 +4,13 @@ import { Activity, Server, Users, Database, AlertTriangle, Shield } from 'lucide
 import Sidebar from '@/components/Sidebar';
 import ar from '@/lib/i18n';
 export default function AdminDashboard() {
-    const [health, setHealth] = useState(null);
+    const [health, setHealth] = useState<any>(null);
     useEffect(() => {
-        fetch('/api/admin/health')
+        fetch('/api/admin/health', {
+            headers: {
+                'Authorization': `Bearer ${localStorage.getItem('token')}`
+            }
+        })
             .then(res => res.json())
             .then(data => setHealth(data))
             .catch(() => { });
