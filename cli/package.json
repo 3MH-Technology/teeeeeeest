@@ -1,0 +1,20 @@
+{
+  "name": "wolfctl",
+  "version": "0.4.0",
+  "description": "Wolf Hosting CLI Toolkit",
+  "main": "wolfctl.js",
+  "bin": {
+    "wolfctl": "./wolfctl.js"
+  },
+  "scripts": {
+    "build": "tsc"
+  },
+  "dependencies": {
+    "axios": "^1.7.3",
+    "commander": "^12.1.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.0.0",
+    "@types/node": "^20.0.0"
+  }
+}

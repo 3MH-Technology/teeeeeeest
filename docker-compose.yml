@@ -1,0 +1,107 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:15-alpine
+    container_name: wolf_db
+    environment:
+      POSTGRES_USER: wolf
+      POSTGRES_PASSWORD: secretpassword
+      POSTGRES_DB: wolfhosting
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./schema.sql:/docker-entrypoint-initdb.d/schema.sql
+    networks:
+      - wolf_backend
+
+  redis:
+    image: redis:7-alpine
+    container_name: wolf_redis
+    volumes:
+      - redisdata:/data
+    networks:
+      - wolf_backend
+
+  nginx:
+    image: nginx:alpine
+    container_name: wolf_nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - nginx-conf:/etc/nginx/bot-confs
+    networks:
+      - wolf_backend
+      - wolf_bots
+    restart: unless-stopped
+
+  platform:
+    build: 
+      context: .
+      dockerfile: docker/platform.Dockerfile
+    container_name: wolf_platform
+    ports:
+      - "3000:3000"
+    environment:
+      - DATABASE_URL=postgresql://wolf:secretpassword@db:5432/wolfhosting
+      - REDIS_URL=redis://redis:6379
+      - JWT_SECRET=supersecretjwt
+    networks:
+      - wolf_backend
+    depends_on:
+      - db
+      - redis
+    restart: unless-stopped
+
+  worker:
+    build: 
+      context: .
+      dockerfile: docker/worker.Dockerfile
+    container_name: wolf_worker
+    environment:
+      - DATABASE_URL=postgresql://wolf:secretpassword@db:5432/wolfhosting
+      - REDIS_URL=redis://redis:6379
+      - JWT_SECRET=supersecretjwt
+      # Encryption key for env variables
+      - ENCRYPTION_KEY=0123456789abcdef0123456789abcdef
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - nginx-conf:/app/nginx-conf
+    networks:
+      - wolf_backend
+      - wolf_bots
+    depends_on:
+      - redis
+      - db
+    restart: unless-stopped
+
+  ws-server:
+    build: 
+      context: .
+      dockerfile: docker/ws.Dockerfile
+    container_name: wolf_ws
+    ports:
+      - "3001:3001"
+    environment:
+      - REDIS_URL=redis://redis:6379
+      - DATABASE_URL=postgresql://wolf:secretpassword@db:5432/wolfhosting
+    networks:
+      - wolf_backend
+    depends_on:
+      - redis
+      - db
+    restart: unless-stopped
+
+networks:
+  wolf_backend:
+    name: wolf_backend
+    driver: bridge
+  wolf_bots:
+    name: wolf_bots
+    driver: bridge
+
+volumes:
+  pgdata:
+  redisdata:
+  nginx-conf:

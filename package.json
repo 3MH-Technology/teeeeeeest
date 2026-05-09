@@ -1,0 +1,42 @@
+{
+  "name": "wolf-hosting",
+  "version": "0.4.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "worker": "npx tsx worker/index.ts",
+    "ws-server": "npx tsx ws/server.ts"
+  },
+  "dependencies": {
+    "next": "14.2.5",
+    "react": "18.3.1",
+    "react-dom": "18.3.1",
+    "pg": "^8.12.0",
+    "ioredis": "^5.4.1",
+    "bullmq": "^5.10.4",
+    "socket.io": "^4.7.5",
+    "socket.io-client": "^4.7.5",
+    "jsonwebtoken": "^9.0.2",
+    "bcryptjs": "^2.4.3",
+    "lucide-react": "^0.424.0",
+    "dockerode": "^4.0.2",
+    "dotenv": "^16.4.5",
+    "winston": "^3.13.1",
+    "uuid": "^10.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20",
+    "@types/react": "^18",
+    "@types/react-dom": "^18",
+    "@types/pg": "^8.11.6",
+    "@types/jsonwebtoken": "^9.0.6",
+    "@types/bcryptjs": "^2.4.6",
+    "@types/dockerode": "^3.3.31",
+    "@types/uuid": "^10.0.0",
+    "typescript": "^5",
+    "tsx": "^4.16.2"
+  }
+}
