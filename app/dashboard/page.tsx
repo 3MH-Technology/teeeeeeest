@@ -29,6 +29,33 @@ export default function DashboardPage() {
             setLoading(false);
         }
     };
+    const handleAction = async (botId: string, action: string) => {
+        try {
+            const res = await fetch(`/api/bots/${botId}/action`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                },
+                body: JSON.stringify({ action })
+            });
+            if (res.ok) fetchBots();
+        } catch (e) { console.error(e); }
+    };
+
+    const handleDelete = async (botId: string) => {
+        if (!confirm(ar.common.confirmDelete || 'هل أنت متأكد؟')) return;
+        try {
+            const res = await fetch(`/api/bots/${botId}`, {
+                method: 'DELETE',
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                }
+            });
+            if (res.ok) fetchBots();
+        } catch (e) { console.error(e); }
+    };
+
     useEffect(() => {
         fetchBots();
         const interval = setInterval(fetchBots, 5000);
@@ -117,16 +144,16 @@ export default function DashboardPage() {
                           <Terminal size={14}/>
                         </button>
                         {bot.status === 'RUNNING' ? (<>
-                            <button className="btn btn-secondary btn-sm" title={ar.infra.restart}>
+                            <button className="btn btn-secondary btn-sm" title={ar.infra.restart} onClick={() => handleAction(bot.id, 'start')}>
                               <RotateCcw size={14}/>
                             </button>
-                            <button className="btn btn-secondary btn-sm" title="إيقاف">
+                            <button className="btn btn-secondary btn-sm" title="إيقاف" onClick={() => handleAction(bot.id, 'stop')}>
                               <Square size={14}/>
                             </button>
-                          </>) : (<button className="btn btn-secondary btn-sm" title={ar.infra.restart}>
+                          </>) : (<button className="btn btn-secondary btn-sm" title={ar.infra.restart} onClick={() => handleAction(bot.id, 'start')}>
                             <Play size={14}/>
                           </button>)}
-                        <button className="btn btn-danger btn-sm" title={ar.infra.delete}>
+                        <button className="btn btn-danger btn-sm" title={ar.infra.delete} onClick={() => handleDelete(bot.id)}>
                           <Trash2 size={14}/>
                         </button>
                       </div>
