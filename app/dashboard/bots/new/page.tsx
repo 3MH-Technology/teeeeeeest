@@ -8,7 +8,7 @@ export default function NewDeploymentPage() {
     const [type, setType] = useState('python');
     const [token, setToken] = useState('');
     const [loading, setLoading] = useState(false);
-    const [error, setError] = useState(null);
+    const [error, setError] = useState<any>(null);
     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
@@ -16,7 +16,10 @@ export default function NewDeploymentPage() {
         try {
             const res = await fetch('/api/bots', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                },
                 body: JSON.stringify({ name, type, token }),
             });
             if (res.ok) {
